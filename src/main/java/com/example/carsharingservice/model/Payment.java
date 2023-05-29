@@ -1,5 +1,6 @@
 package com.example.carsharingservice.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -22,9 +23,13 @@ public class Payment {
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private Long id;
+    @Column(name = "rental_id")
     private Long rentalId;
+    @Column(name = "session_url")
     private String sessionUrl;
+    @Column(name = "session_id")
     private String sessionId;
+    @Column(name = "amount_to_pay")
     private BigDecimal amountToPay;
     @Enumerated(EnumType.STRING)
     private Status status;
