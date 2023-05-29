@@ -1,3 +1,5 @@
 databaseChangeLog:
   - include:
       file: /db/changelog/changes/create-car-table.sql
+  - include:
+      file: /db/changelog/changes/create-user-table.sql
