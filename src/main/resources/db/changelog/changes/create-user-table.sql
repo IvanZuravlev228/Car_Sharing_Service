@@ -1,5 +1,5 @@
 --liquibase formatted sql
---changeset IvanZhuravlev:create-car-table
+--changeset IvanZhuravlev:create-user-table
 CREATE TABLE IF NOT EXISTS users
 (
     id bigint NOT NULL,
@@ -12,4 +12,4 @@ CREATE TABLE IF NOT EXISTS users
     CONSTRAINT user_pk PRIMARY KEY(id)
     );
 
---rollback DROP TABLE cars;
+--rollback DROP TABLE users;
