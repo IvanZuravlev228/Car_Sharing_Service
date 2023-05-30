@@ -4,7 +4,9 @@ import com.example.carsharingservice.service.NotificationService;
 import com.example.carsharingservice.telegrambot.NotificationBot;
 import io.github.cdimascio.dotenv.Dotenv;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
 
+@Service
 public class TelegramNotificationServiceImpl implements NotificationService {
     private final NotificationBot notificationBot;
     private final Dotenv dotenv = Dotenv.load();
