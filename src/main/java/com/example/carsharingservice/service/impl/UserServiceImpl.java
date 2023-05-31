@@ -17,4 +17,9 @@ public class UserServiceImpl implements UserService {
         return userRepository.getUserByEmail(username).orElseThrow(() ->
                 new NoSuchElementException("can't get user with email " + username));
     }
+
+    @Override
+    public User save(User user) {
+        return userRepository.save(user);
+    }
 }

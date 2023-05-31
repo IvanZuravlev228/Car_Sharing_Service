@@ -1,8 +1,9 @@
 package com.example.carsharingservice.telegrambot;
 
 import com.example.carsharingservice.model.User;
-import com.example.carsharingservice.service.UserService;
+import com.example.carsharingservice.repository.UserRepository;
 import io.github.cdimascio.dotenv.Dotenv;
+import java.util.Optional;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -11,11 +12,11 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 @Component
 public class NotificationBot extends TelegramLongPollingBot {
-    private final UserService userService;
+    private final UserRepository userRepository;
 
-    public NotificationBot(UserService userService) {
+    public NotificationBot(UserRepository userRepository) {
         super();
-        this.userService = userService;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -26,10 +27,11 @@ public class NotificationBot extends TelegramLongPollingBot {
             if (messageText.equals("/start")) {
                 greetMessage(chatId, update.getMessage().getChat().getFirstName());
             } else {
-                User user = userService.getByUsername(messageText);
-                if (user != null) {
+                Optional<User> userByEmail = userRepository.getUserByEmail(messageText);
+                if (userByEmail.isPresent()) {
+                    User user = userByEmail.get();
                     user.setChatId(chatId);
-                    userService.save(user);
+                    userRepository.save(user);
                     thankYouMessage(chatId);
                 } else {
                     failMessage(chatId);
