@@ -3,6 +3,7 @@ package com.example.carsharingservice.service.impl;
 import com.example.carsharingservice.model.User;
 import com.example.carsharingservice.repository.UserRepository;
 import com.example.carsharingservice.service.UserService;
+import java.util.List;
 import java.util.NoSuchElementException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,11 @@ public class UserServiceImpl implements UserService {
     public User getByUsername(String username) {
         return userRepository.getUserByEmail(username).orElseThrow(() ->
                 new NoSuchElementException("can't get user with email " + username));
+    }
+
+    @Override
+    public List<User> findUserByRole(User.Role role) {
+        return userRepository.findAllByRole(role);
     }
 
     @Override

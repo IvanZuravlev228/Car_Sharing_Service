@@ -1,11 +1,12 @@
 package com.example.carsharingservice.service.impl;
 
 import com.example.carsharingservice.model.Rental;
+import com.example.carsharingservice.model.User;
 import com.example.carsharingservice.service.NotificationService;
+import com.example.carsharingservice.service.UserService;
 import com.example.carsharingservice.telegrambot.NotificationBot;
-import io.github.cdimascio.dotenv.Dotenv;
 import java.time.LocalDate;
-import java.util.Objects;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -15,9 +16,8 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 @Service
 @RequiredArgsConstructor
 public class TelegramNotificationServiceImpl implements NotificationService {
-    private Dotenv dotenv;
-
     private final NotificationBot notificationBot;
+    private final UserService userService;
 
     @Override
     public void sendMessageAboutSuccessRent(Rental rental) {
@@ -47,13 +47,16 @@ public class TelegramNotificationServiceImpl implements NotificationService {
 
     @Override
     public void sendMessageToAdministrators(String message) {
-        SendMessage sendMessage = new SendMessage();
-        sendMessage.setChatId(Objects.requireNonNull(dotenv.get("CHAT_ID")));
-        sendMessage.setText(message);
-        try {
-            notificationBot.execute(sendMessage);
-        } catch (TelegramApiException e) {
-            throw new RuntimeException("Message: " + message + " isn't sent to admins chat");
+        List<User> managers = userService.findUserByRole(User.Role.MANAGER);
+        for (User user : managers) {
+            SendMessage sendMessage = new SendMessage();
+            sendMessage.setChatId(user.getChatId());
+            sendMessage.setText(message);
+            try {
+                notificationBot.execute(sendMessage);
+            } catch (TelegramApiException e) {
+                throw new RuntimeException("Message: " + message + " isn't sent to admins chat");
+            }
         }
     }
 
