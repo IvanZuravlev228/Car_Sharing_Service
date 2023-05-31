@@ -1,5 +1,7 @@
 package com.example.carsharingservice.telegrambot;
 
+import com.example.carsharingservice.model.User;
+import com.example.carsharingservice.service.UserService;
 import io.github.cdimascio.dotenv.Dotenv;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -12,7 +14,7 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 @RequiredArgsConstructor
 public class NotificationBot extends TelegramLongPollingBot {
     private Dotenv dotenv = Dotenv.load();
-    // private final UserService userService;
+    private final UserService userService;
 
 
     @Override
@@ -23,13 +25,13 @@ public class NotificationBot extends TelegramLongPollingBot {
                 Long chatId = update.getMessage().getChatId();
                 greetMessage(chatId, update.getMessage().getChat().getUserName());
                 String userEmail = update.getMessage().getText();
-               /* User user = userService.findByEmail(userEmail);
+               User user = userService.getByUsername(userEmail);
                 if (user != null) {
                     user.setChatId(chatId);
-                    userService.save(userChat);
+                    userService.save(user);
                 } else {
                     failMessage(chatId);
-                } */
+                }
             }
         }
     }
