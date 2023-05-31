@@ -1,5 +1,8 @@
 package com.example.carsharingservice.service.impl;
 
+import java.time.LocalDate;
+import java.util.List;
+import com.example.carsharingservice.model.Rental;
 import com.example.carsharingservice.service.NotificationService;
 import com.example.carsharingservice.telegrambot.NotificationBot;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +30,28 @@ public class TelegramNotificationServiceImpl implements NotificationService {
     @Scheduled(cron = "0 0 12 * * ?")
     @Override
     public void checkOverdueRentals() {
-        // TODO: some logic how to handle overdue rental - implements when repository will exist
+        LocalDate today = LocalDate.now();
+        List<Rental> overdueRentals = rentalRepository.findOverdueRentals(today);
+
+        if (overdueRentals.isEmpty()) {
+            sentMessage("No rentals overdue today!");
+        } else {
+            for (Rental rental : overdueRentals) {
+                String message = generateOverdueRentalMessage(rental);
+                sentMessage(message);
+            }
+        }
+    }
+
+    private String generateOverdueRentalMessage(Rental rental) {
+        // Генерація повідомлення про прострочену оренду на основі даних оренди
+        // Поверніть сформоване повідомлення як рядок
+    }
+
+    private String getChatIdForCurrentUser() {
+        // Отримати chat ID для поточного користувача, наприклад, на основі авторизованого користувача або збереженого в сесії
+        String currentUserChatId = // отримати chat ID для поточного користувача
+                User user = userService.getUserByChatId(currentUserChatId);
+        return user.getChatId();
     }
 }

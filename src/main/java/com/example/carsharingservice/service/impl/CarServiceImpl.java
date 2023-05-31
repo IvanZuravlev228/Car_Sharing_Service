@@ -1,11 +1,11 @@
 package com.example.carsharingservice.service.impl;
 
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
 import com.example.carsharingservice.model.Car;
 import com.example.carsharingservice.repository.CarRepository;
 import com.example.carsharingservice.service.CarService;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -22,11 +22,11 @@ public class CarServiceImpl implements CarService {
     }
 
     @Override
-    public void takeCarFromInventory(Long id) {
+    public Car removeCarFromInventory(Long id) {
         Car car = getById(id);
         if (car.getInventory() > 0) {
             car.setInventory(car.getInventory() - 1);
-            carRepository.save(car);
+            return carRepository.save(car);
         } else {
             throw new RuntimeException("Can't take car with id " + id + " from inventory");
         }
@@ -37,7 +37,7 @@ public class CarServiceImpl implements CarService {
         Optional<Car> carOptional = carRepository.findByModelAndBrandAndDailyFeeAndType(
                 car.getModel(), car.getBrand(), car.getDailyFee(), car.getType());
         if (carOptional.isPresent()) {
-            return car;
+            return carOptional.get();
         }
         return carRepository.save(car);
     }

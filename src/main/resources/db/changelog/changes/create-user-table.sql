@@ -2,7 +2,7 @@
 --changeset IvanZhuravlev:create-user-table
 CREATE TABLE IF NOT EXISTS users
 (
-    id bigint NOT NULL,
+    id bigint NOT NULL AUTO_INCREMENT,
     email character varying(256) NOT NULL,
     first_name character varying(256) NOT NULL,
     last_name character varying(256) NOT NULL,
