@@ -6,7 +6,7 @@ import com.example.carsharingservice.model.Car;
 public interface CarService {
     Car addCarToInventory(Long id);
 
-    void takeCarFromInventory(Long id);
+    Car removeCarFromInventory(Long id);
 
     Car createNewCar(Car car);
 
