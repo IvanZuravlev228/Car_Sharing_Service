@@ -1,7 +1,7 @@
 package com.example.carsharingservice.service;
 
-import java.util.List;
 import com.example.carsharingservice.model.User;
+import java.util.List;
 
 public interface UserService {
     User getByUsername(String username);
@@ -9,4 +9,6 @@ public interface UserService {
     User save(User user);
 
     List<User> findUserByRole(User.Role role);
+
+    User update(User user);
 }
