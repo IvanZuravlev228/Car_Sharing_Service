@@ -1,10 +1,11 @@
 package com.example.carsharingservice.service.impl;
 
-import java.time.LocalDate;
-import java.util.List;
 import com.example.carsharingservice.model.Rental;
 import com.example.carsharingservice.service.NotificationService;
 import com.example.carsharingservice.telegrambot.NotificationBot;
+import io.github.cdimascio.dotenv.Dotenv;
+import java.time.LocalDate;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -14,12 +15,15 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 @Service
 @RequiredArgsConstructor
 public class TelegramNotificationServiceImpl implements NotificationService {
+    private Dotenv dotenv;
+
     private final NotificationBot notificationBot;
 
     @Override
-    public void sentMessage(String message) {
+    public void sendMessageAboutSuccessRent(Rental rental) {
         SendMessage sendMessage = new SendMessage();
-        sendMessage.setText(message);
+        sendMessage.setChatId(rental.getUser().getChatId());
+        sendMessage.setText(messageAboutSuccessRent(rental));
         try {
             notificationBot.execute(sendMessage);
         } catch (TelegramApiException e) {
@@ -30,5 +34,40 @@ public class TelegramNotificationServiceImpl implements NotificationService {
     @Scheduled(cron = "0 0 12 * * ?")
     @Override
     public void checkOverdueRentals() {
+        LocalDate localDate = LocalDate.now();
+        /*
+        List<Rental> overdueRent = rentalService.findByOverdueRent(localDate);
+        for (Rental rental : overdueRent) {
+            SendMessage sendMessage = new SendMessage();
+            sendMessage.setChatId(rental.getUser().getChatId());
+            sendMessage.setText(messageAboutOverdueRent(rental, localDate));
+        }
+        */
+    }
+
+    @Override
+    public void sendMessageToAdministrators(String message) {
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.setChatId(Objects.requireNonNull(dotenv.get("CHAT_ID")));
+        sendMessage.setText(message);
+        try {
+            notificationBot.execute(sendMessage);
+        } catch (TelegramApiException e) {
+            throw new RuntimeException("Message: " + message + " isn't sent to admins chat");
+        }
+    }
+
+    private String messageAboutSuccessRent(Rental rental) {
+        String text = rental.getUser().getFirstName() + ", you are successfully rent: "
+                + rental.getCar().getModel() + " at " + rental.getRentalStart().toString()
+                + ". Please you should return car until " + rental.getRentalReturn().toString()
+                + ". Your daily fee: " + rental.getCar().getDailyFee().toString();
+        return text;
+    }
+
+    private String messageAboutOverdueRent(Rental rental, LocalDate date) {
+        String text = "You overdue your rental payment at " + date.toString()
+                + ". Please, pay your fine!";
+        return text;
     }
 }
