@@ -6,7 +6,7 @@ import com.example.carsharingservice.model.Car;
 import com.example.carsharingservice.model.Rental;
 import com.example.carsharingservice.model.User;
 
-public interface RentalServices {
+public interface RentalService {
     Rental createNewRental(Car car, User user, LocalDate returnDate);
 
     List<Rental> getRentalsByUserIdAndIsReturned(Long userId, Boolean isRented);
