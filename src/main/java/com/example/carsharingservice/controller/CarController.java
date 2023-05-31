@@ -1,14 +1,14 @@
 package com.example.carsharingservice.controller;
 
-import java.util.List;
-import java.util.stream.Collectors;
-import com.example.carsharingservice.dto.CarRequestDto;
-import com.example.carsharingservice.dto.CarResponseDto;
+import com.example.carsharingservice.dto.car.CarRequestDto;
+import com.example.carsharingservice.dto.car.CarResponseDto;
 import com.example.carsharingservice.model.Car;
 import com.example.carsharingservice.service.CarService;
 import com.example.carsharingservice.service.mapper.CarMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
