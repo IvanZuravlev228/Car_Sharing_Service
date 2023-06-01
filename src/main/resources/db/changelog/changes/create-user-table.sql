@@ -9,7 +9,8 @@ CREATE TABLE IF NOT EXISTS users
     password character varying(256) NOT NULL,
     role character varying(256) NOT NULL,
 
-    CONSTRAINT user_pk PRIMARY KEY(id)
+    CONSTRAINT user_pk PRIMARY KEY(id),
+    CONSTRAINT user_email_unique UNIQUE (email)
     );
 
 --rollback DROP TABLE users;
