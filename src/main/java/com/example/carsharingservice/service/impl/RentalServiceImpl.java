@@ -5,15 +5,17 @@ import com.example.carsharingservice.model.Rental;
 import com.example.carsharingservice.model.User;
 import com.example.carsharingservice.repository.RentalRepository;
 import com.example.carsharingservice.service.CarService;
-import com.example.carsharingservice.service.RentalServices;
+import com.example.carsharingservice.service.RentalService;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
 @AllArgsConstructor
-public class RentalServiceImpl implements RentalServices {
+public class RentalServiceImpl implements RentalService {
+
     private final CarService carService;
     private final RentalRepository rentalRepository;
 
@@ -35,7 +37,7 @@ public class RentalServiceImpl implements RentalServices {
         return rental
                 .stream()
                 .filter(rental1 -> rental1.getActualRentalReturn() == null && isRented)
-                .toList();
+                .collect(Collectors.toList());
     }
 
     @Override
