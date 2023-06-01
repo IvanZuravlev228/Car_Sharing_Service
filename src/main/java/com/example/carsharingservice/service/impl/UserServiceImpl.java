@@ -29,6 +29,7 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(id).orElseThrow(() ->
                 new NoSuchElementException("can't get user with id " + id));
         user.setRole(role);
+        notificationService.sendMessageToAdministrators(messageAboutUpdatedUser());
         return userRepository.save(user);
     }
 
@@ -52,13 +53,14 @@ public class UserServiceImpl implements UserService {
         user.setRole(role);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         authentication.setAuthenticated(false);
+        notificationService.sendMessageToAdministrators(messageAboutUpdatedUser());
         return userRepository.save(user);
     }
 
     @Override
-    public User update(User user) {
-        notificationService.sendMessageToAdministrators(messageAboutUpdatedUser());
-        return userRepository.save(user);
+    public User getById(Long userId) {
+        return userRepository.findById(userId).orElseThrow(()
+                -> new NoSuchElementException("Can't find user with id: " + userId));
     }
 
     private String messageAboutSavedUser() {

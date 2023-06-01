@@ -14,4 +14,6 @@ public interface RentalService {
     Rental getById(Long id);
 
     Rental returnCar(Long id);
+
+    List<Rental> findByOverdueRent(LocalDate date);
 }
