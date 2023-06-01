@@ -1,13 +1,13 @@
 package com.example.carsharingservice.service.impl;
 
-import java.time.LocalDate;
-import java.util.List;
 import com.example.carsharingservice.model.Car;
 import com.example.carsharingservice.model.Rental;
 import com.example.carsharingservice.model.User;
 import com.example.carsharingservice.repository.RentalRepository;
 import com.example.carsharingservice.service.CarService;
 import com.example.carsharingservice.service.RentalServices;
+import java.time.LocalDate;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -32,9 +32,10 @@ public class RentalServiceImpl implements RentalServices {
     @Override
     public List<Rental> getRentalsByUserIdAndIsReturned(Long userId, Boolean isRented) {
         List<Rental> rental = rentalRepository.getByUserId(userId);
-            return rental.stream()
-                    .filter(rental1 -> rental1.getActualRentalReturn() == null && isRented)
-                    .toList();
+        return rental
+                .stream()
+                .filter(rental1 -> rental1.getActualRentalReturn() == null && isRented)
+                .toList();
     }
 
     @Override
