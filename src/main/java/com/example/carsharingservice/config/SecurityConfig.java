@@ -1,5 +1,6 @@
 package com.example.carsharingservice.config;
 
+import com.example.carsharingservice.model.User;
 import com.example.carsharingservice.security.jwt.JwtTokenFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -38,7 +39,14 @@ public class SecurityConfig {
         return http
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> {
-                    auth.requestMatchers(HttpMethod.POST, "/register", "/login").permitAll();
+                    auth.requestMatchers(HttpMethod.POST, "/register", "/login")
+                            .permitAll();
+                    auth.requestMatchers(HttpMethod.GET, "/users/me")
+                            .hasRole(User.Role.CUSTOMER.name());
+                    auth.requestMatchers(HttpMethod.PUT, "/users/me")
+                            .hasRole(User.Role.CUSTOMER.name());
+                    auth.requestMatchers(HttpMethod.PUT, "/users/{id}/role")
+                            .hasRole(User.Role.MANAGER.name());
                 })
                 .authenticationProvider(authenticationProvider())
                 .csrf(AbstractHttpConfigurer::disable)
