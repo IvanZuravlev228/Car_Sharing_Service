@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 @Service
 @AllArgsConstructor
 public class RentalServiceImpl implements RentalService {
+
     private final CarService carService;
     private final RentalRepository rentalRepository;
 
@@ -33,9 +34,10 @@ public class RentalServiceImpl implements RentalService {
     @Override
     public List<Rental> getRentalsByUserIdAndIsReturned(Long userId, Boolean isRented) {
         List<Rental> rental = rentalRepository.getByUserId(userId);
-            return rental.stream()
-                    .filter(rental1 -> rental1.getActualRentalReturn() == null && isRented)
-                    .collect(Collectors.toList());
+        return rental
+                .stream()
+                .filter(rental1 -> rental1.getActualRentalReturn() == null && isRented)
+                .collect(Collectors.toList());
     }
 
     @Override

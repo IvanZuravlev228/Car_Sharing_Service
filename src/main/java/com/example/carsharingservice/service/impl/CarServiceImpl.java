@@ -1,11 +1,12 @@
 package com.example.carsharingservice.service.impl;
 
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
 import com.example.carsharingservice.model.Car;
 import com.example.carsharingservice.repository.CarRepository;
 import com.example.carsharingservice.service.CarService;
+import com.example.carsharingservice.service.NotificationService;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -13,20 +14,25 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class CarServiceImpl implements CarService {
     private final CarRepository carRepository;
+    private final NotificationService notificationService;
 
     @Override
     public Car addCarToInventory(Long id) {
         Car car = getById(id);
         car.setInventory(car.getInventory() + 1);
+        notificationService.sendMessageToAdministrators("Car with id: "
+                + id + " was add to inventory");
         return carRepository.save(car);
     }
 
     @Override
-    public void takeCarFromInventory(Long id) {
+    public Car removeCarFromInventory(Long id) {
         Car car = getById(id);
         if (car.getInventory() > 0) {
             car.setInventory(car.getInventory() - 1);
-            carRepository.save(car);
+            notificationService.sendMessageToAdministrators("Cat by id: "
+                    + id + " was removed from inventory");
+            return carRepository.save(car);
         } else {
             throw new RuntimeException("Can't take car with id " + id + " from inventory");
         }
@@ -37,8 +43,9 @@ public class CarServiceImpl implements CarService {
         Optional<Car> carOptional = carRepository.findByModelAndBrandAndDailyFeeAndType(
                 car.getModel(), car.getBrand(), car.getDailyFee(), car.getType());
         if (carOptional.isPresent()) {
-            return car;
+            return carOptional.get();
         }
+        notificationService.sendMessageToAdministrators("Car: " + car + " was save to DB");
         return carRepository.save(car);
     }
 
@@ -55,11 +62,13 @@ public class CarServiceImpl implements CarService {
 
     @Override
     public Car update(Car car) {
+        notificationService.sendMessageToAdministrators("Car: " + car + " was updated in DB");
         return carRepository.save(car);
     }
 
     @Override
     public void delete(Long id) {
+        notificationService.sendMessageToAdministrators("Cat with id:" + id + " was deleted");
         carRepository.deleteById(id);
     }
 }
