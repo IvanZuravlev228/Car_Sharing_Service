@@ -2,7 +2,9 @@ package com.example.carsharingservice.service.impl;
 
 import com.example.carsharingservice.model.User;
 import com.example.carsharingservice.repository.UserRepository;
+import com.example.carsharingservice.service.NotificationService;
 import com.example.carsharingservice.service.UserService;
+import java.util.List;
 import java.util.NoSuchElementException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -14,6 +16,7 @@ import org.springframework.stereotype.Service;
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final NotificationService notificationService;
 
     @Override
     public User getByUsername(String username) {
@@ -27,6 +30,16 @@ public class UserServiceImpl implements UserService {
                 new NoSuchElementException("can't get user with id " + id));
         user.setRole(role);
         return userRepository.save(user);
+
+    @Override
+    public List<User> findUserByRole(User.Role role) {
+        return userRepository.findAllByRole(role);
+    }
+
+    @Override
+    public User save(User user) {
+        notificationService.sendMessageToAdministrators(messageAboutSavedUser());
+        return userRepository.save(user);
     }
 
     @Override
@@ -39,5 +52,19 @@ public class UserServiceImpl implements UserService {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         authentication.setAuthenticated(false);
         return userRepository.save(user);
+    }
+
+    @Override
+    public User update(User user) {
+        notificationService.sendMessageToAdministrators(messageAboutUpdatedUser());
+        return userRepository.save(user);
+    }
+
+    private String messageAboutSavedUser() {
+        return "User was save to DB";
+    }
+
+    private String messageAboutUpdatedUser() {
+        return "Info about User was updated to DB";
     }
 }
