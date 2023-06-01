@@ -1,14 +1,14 @@
 package com.example.carsharingservice.service.impl;
 
-import java.time.LocalDate;
-import java.util.List;
-import java.util.stream.Collectors;
 import com.example.carsharingservice.model.Car;
 import com.example.carsharingservice.model.Rental;
 import com.example.carsharingservice.model.User;
 import com.example.carsharingservice.repository.RentalRepository;
 import com.example.carsharingservice.service.CarService;
 import com.example.carsharingservice.service.RentalService;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 

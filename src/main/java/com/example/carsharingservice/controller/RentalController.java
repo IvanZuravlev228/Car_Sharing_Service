@@ -1,7 +1,5 @@
 package com.example.carsharingservice.controller;
 
-import java.util.List;
-import java.util.stream.Collectors;
 import com.example.carsharingservice.dto.rental.RentalRequestDto;
 import com.example.carsharingservice.dto.rental.RentalResponseDto;
 import com.example.carsharingservice.model.Car;
@@ -9,6 +7,8 @@ import com.example.carsharingservice.model.User;
 import com.example.carsharingservice.service.CarService;
 import com.example.carsharingservice.service.RentalService;
 import com.example.carsharingservice.service.mapper.RentalMapper;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,7 +32,7 @@ public class RentalController {
         return rentalMapper.toDto(rentalService.getById(id));
     }
 
-    @GetMapping("/")
+    @GetMapping
     public List<RentalResponseDto> getActiveRental(@RequestParam Long userId,
                                                    @RequestParam Boolean isActive) {
         return rentalService.getRentalsByUserIdAndIsReturned(userId, isActive)
