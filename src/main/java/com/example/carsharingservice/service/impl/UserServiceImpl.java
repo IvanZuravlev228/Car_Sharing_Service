@@ -30,6 +30,7 @@ public class UserServiceImpl implements UserService {
                 new NoSuchElementException("can't get user with id " + id));
         user.setRole(role);
         return userRepository.save(user);
+    }
 
     @Override
     public List<User> findUserByRole(User.Role role) {
