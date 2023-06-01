@@ -26,6 +26,7 @@ public class User {
     private String lastName;
     @Enumerated(EnumType.STRING)
     private Role role;
+    private Long chatId;
 
     public enum Role {
         MANAGER, CUSTOMER
