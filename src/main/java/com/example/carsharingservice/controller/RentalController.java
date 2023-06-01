@@ -7,6 +7,8 @@ import com.example.carsharingservice.model.User;
 import com.example.carsharingservice.service.CarService;
 import com.example.carsharingservice.service.RentalService;
 import com.example.carsharingservice.service.mapper.RentalMapper;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -28,11 +30,13 @@ public class RentalController {
     private final RentalMapper rentalMapper;
 
     @GetMapping("/{id}")
+    @Operation(description = "Get rental by id")
     public RentalResponseDto getSpecificRental(@PathVariable Long id) {
         return rentalMapper.toDto(rentalService.getById(id));
     }
 
     @GetMapping
+    @Operation(description = "Get rentals by user id and is active")
     public List<RentalResponseDto> getActiveRental(@RequestParam Long userId,
                                                    @RequestParam Boolean isActive) {
         return rentalService.getRentalsByUserIdAndIsReturned(userId, isActive)
@@ -42,11 +46,13 @@ public class RentalController {
     }
 
     @PostMapping("/{id}/return")
+    @Operation(description = "End rental by id")
     public void returnCar(@PathVariable Long id) {
         rentalService.returnCar(id);
     }
 
     @PostMapping
+    @Operation(description = "Create new rental")
     public RentalResponseDto createRental(@RequestBody RentalRequestDto rentalRequestDto) {
         Car car = carService.getById(rentalRequestDto.getCarId());
         User user = userService.getById(rentalRequestDto.getUserId());
