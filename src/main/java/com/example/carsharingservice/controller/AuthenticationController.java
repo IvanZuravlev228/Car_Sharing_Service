@@ -5,7 +5,8 @@ import com.example.carsharingservice.dto.user.UserRegisterDto;
 import com.example.carsharingservice.model.User;
 import com.example.carsharingservice.security.jwt.JwtTokenProvider;
 import com.example.carsharingservice.service.AuthenticationService;
-import com.example.carsharingservice.service.mapper.UserRegisterMapper;
+import com.example.carsharingservice.service.mapper.UserMapper;
+import io.swagger.v3.oas.annotations.Operation;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -22,14 +23,16 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthenticationController {
     private final AuthenticationService authenticationService;
     private final JwtTokenProvider jwtTokenProvider;
-    private final UserRegisterMapper userRegisterMapper;
+    private final UserMapper userRegisterMapper;
 
     @PostMapping("/register")
+    @Operation(description = "register new user")
     public User register(@RequestBody UserRegisterDto user) {
         return authenticationService.register(userRegisterMapper.toModel(user));
     }
 
     @PostMapping("/login")
+    @Operation(description = "login with email and password and you will get JWT token in response")
     public ResponseEntity<Object> login(@RequestBody UserLoginDto userLoginDto)
             throws RuntimeException {
         User user = authenticationService.login(userLoginDto.getEmail(),
