@@ -9,6 +9,8 @@ import com.example.carsharingservice.telegrambot.NotificationBot;
 import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -18,8 +20,20 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 @RequiredArgsConstructor
 public class TelegramNotificationServiceImpl implements NotificationService {
     private final NotificationBot notificationBot;
-    private final UserService userService;
-    private final RentalService rentalService;
+    private UserService userService;
+    private RentalService rentalService;
+
+    @Lazy
+    @Autowired
+    public void setUserService(UserService userService) {
+        this.userService = userService;
+    }
+
+    @Lazy
+    @Autowired
+    public void setRentalService(RentalService rentalService) {
+        this.rentalService = rentalService;
+    }
 
     @Override
     public void sendMessageAboutSuccessRent(Rental rental) {

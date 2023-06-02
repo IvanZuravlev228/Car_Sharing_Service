@@ -41,11 +41,25 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> {
                     auth.requestMatchers(HttpMethod.POST, "/register", "/login")
                             .permitAll();
-                    auth.requestMatchers(HttpMethod.GET, "/users/me")
+                    auth.requestMatchers(HttpMethod.GET, "/swagger-ui.html")
+                            .permitAll();
+                    auth.requestMatchers(HttpMethod.GET, "/cars", "/cars/{id}", "/rentals/{id}",
+                                    "/rentals")
+                            .authenticated();
+                    auth.requestMatchers(HttpMethod.GET, "/users/me", "/success", "/cancel")
+                            .hasRole(User.Role.CUSTOMER.name());
+                    auth.requestMatchers(HttpMethod.POST, "/rentals", "/rentals/{id}/return",
+                                    "payments")
                             .hasRole(User.Role.CUSTOMER.name());
                     auth.requestMatchers(HttpMethod.PUT, "/users/me")
                             .hasRole(User.Role.CUSTOMER.name());
-                    auth.requestMatchers(HttpMethod.PUT, "/users/{id}/role")
+                    auth.requestMatchers(HttpMethod.GET, "/payments")
+                            .hasRole(User.Role.CUSTOMER.name());
+                    auth.requestMatchers(HttpMethod.PUT, "/users/{id}/role", "/cars/{id}")
+                            .hasRole(User.Role.MANAGER.name());
+                    auth.requestMatchers(HttpMethod.POST, "/cars", "/cars/add/{id}")
+                            .hasRole(User.Role.MANAGER.name());
+                    auth.requestMatchers(HttpMethod.DELETE, "/cars/{id}", "cars/remove/{id}")
                             .hasRole(User.Role.MANAGER.name());
                 })
                 .authenticationProvider(authenticationProvider())

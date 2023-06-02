@@ -15,5 +15,5 @@ public interface UserService {
 
     User updateUserInfo(User user, Authentication authentication);
 
-    User getById(Long userId);
+    User getById(Long id);
 }
