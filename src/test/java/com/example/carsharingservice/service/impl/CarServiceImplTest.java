@@ -1,5 +1,8 @@
 package com.example.carsharingservice.service.impl;
 
+import java.math.BigDecimal;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 import com.example.carsharingservice.model.Car;
 import com.example.carsharingservice.repository.CarRepository;
 import org.junit.jupiter.api.Assertions;
@@ -10,11 +13,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.math.BigDecimal;
-import java.util.NoSuchElementException;
-import java.util.Optional;
-
 
 @ExtendWith(MockitoExtension.class)
 class CarServiceImplTest {

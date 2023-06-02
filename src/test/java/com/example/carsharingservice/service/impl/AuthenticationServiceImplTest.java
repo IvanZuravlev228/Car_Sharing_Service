@@ -1,5 +1,7 @@
 package com.example.carsharingservice.service.impl;
 
+import java.util.NoSuchElementException;
+import java.util.Optional;
 import com.example.carsharingservice.model.User;
 import com.example.carsharingservice.repository.UserRepository;
 import org.junit.jupiter.api.Assertions;
@@ -11,9 +13,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
-
-import java.util.NoSuchElementException;
-import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
 class AuthenticationServiceImplTest {
