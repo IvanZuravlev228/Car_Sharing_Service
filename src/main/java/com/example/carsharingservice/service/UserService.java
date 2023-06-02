@@ -1,7 +1,7 @@
 package com.example.carsharingservice.service;
 
-import com.example.carsharingservice.model.User;
 import java.util.List;
+import com.example.carsharingservice.model.User;
 import org.springframework.security.core.Authentication;
 
 public interface UserService {
@@ -9,11 +9,11 @@ public interface UserService {
 
     User updateUserRole(User.Role role, Long id);
 
-    User updateUserInfo(User user, Authentication authentication);
+    List<User> findUserByRole(User.Role role);
 
     User save(User user);
 
-    List<User> findUserByRole(User.Role role);
+    User updateUserInfo(User user, Authentication authentication);
 
-    User update(User user);
+    User getById(Long userId);
 }

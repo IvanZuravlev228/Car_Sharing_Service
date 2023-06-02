@@ -3,6 +3,7 @@ package com.example.carsharingservice.service.impl;
 import com.example.carsharingservice.model.Rental;
 import com.example.carsharingservice.model.User;
 import com.example.carsharingservice.service.NotificationService;
+import com.example.carsharingservice.service.RentalService;
 import com.example.carsharingservice.service.UserService;
 import com.example.carsharingservice.telegrambot.NotificationBot;
 import java.time.LocalDate;
@@ -18,6 +19,7 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 public class TelegramNotificationServiceImpl implements NotificationService {
     private final NotificationBot notificationBot;
     private final UserService userService;
+    private final RentalService rentalService;
 
     @Override
     public void sendMessageAboutSuccessRent(Rental rental) {
@@ -35,14 +37,12 @@ public class TelegramNotificationServiceImpl implements NotificationService {
     @Override
     public void checkOverdueRentals() {
         LocalDate localDate = LocalDate.now();
-        /*
         List<Rental> overdueRent = rentalService.findByOverdueRent(localDate);
         for (Rental rental : overdueRent) {
             SendMessage sendMessage = new SendMessage();
             sendMessage.setChatId(rental.getUser().getChatId());
             sendMessage.setText(messageAboutOverdueRent(rental, localDate));
         }
-        */
     }
 
     @Override
