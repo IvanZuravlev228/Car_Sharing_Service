@@ -53,4 +53,9 @@ public class RentalServiceImpl implements RentalService {
         rentalRepository.save(rental);
         return rental;
     }
+
+    @Override
+    public List<Rental> findByOverdueRent(LocalDate date) {
+        return rentalRepository.findByOverdueRent(date);
+    }
 }
