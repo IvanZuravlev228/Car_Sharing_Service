@@ -7,6 +7,8 @@ import com.example.carsharingservice.service.UserService;
 import java.util.List;
 import java.util.NoSuchElementException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -16,7 +18,14 @@ import org.springframework.stereotype.Service;
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final NotificationService notificationService;
+
+    @Lazy
+    @Autowired
+    public void setNotificationService(NotificationService notificationService) {
+        this.notificationService = notificationService;
+    }
+
+    private NotificationService notificationService;
 
     @Override
     public User getByUsername(String username) {
@@ -59,6 +68,12 @@ public class UserServiceImpl implements UserService {
     public User update(User user) {
         notificationService.sendMessageToAdministrators(messageAboutUpdatedUser());
         return userRepository.save(user);
+    }
+
+    @Override
+    public User getById(Long id) {
+        return userRepository.findById(id).orElseThrow(() ->
+                new NoSuchElementException("can't get user with id " + id));
     }
 
     private String messageAboutSavedUser() {

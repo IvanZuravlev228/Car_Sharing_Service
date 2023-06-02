@@ -16,4 +16,6 @@ public interface UserService {
     List<User> findUserByRole(User.Role role);
 
     User update(User user);
+
+    User getById(Long id);
 }
