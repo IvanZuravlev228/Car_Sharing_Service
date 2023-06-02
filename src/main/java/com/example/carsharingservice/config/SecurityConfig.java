@@ -46,11 +46,14 @@ public class SecurityConfig {
                     auth.requestMatchers(HttpMethod.GET, "/cars", "/cars/{id}", "/rentals/{id}",
                                     "/rentals")
                             .authenticated();
-                    auth.requestMatchers(HttpMethod.GET, "/users/me")
+                    auth.requestMatchers(HttpMethod.GET, "/users/me", "/success", "/cancel")
                             .hasRole(User.Role.CUSTOMER.name());
-                    auth.requestMatchers(HttpMethod.POST, "/rentals", "/rentals/{id}/return")
+                    auth.requestMatchers(HttpMethod.POST, "/rentals", "/rentals/{id}/return",
+                                    "payments")
                             .hasRole(User.Role.CUSTOMER.name());
                     auth.requestMatchers(HttpMethod.PUT, "/users/me")
+                            .hasRole(User.Role.CUSTOMER.name());
+                    auth.requestMatchers(HttpMethod.GET, "/payments")
                             .hasRole(User.Role.CUSTOMER.name());
                     auth.requestMatchers(HttpMethod.PUT, "/users/{id}/role", "/cars/{id}")
                             .hasRole(User.Role.MANAGER.name());

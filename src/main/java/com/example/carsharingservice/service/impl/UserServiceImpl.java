@@ -18,14 +18,7 @@ import org.springframework.stereotype.Service;
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-
-    @Lazy
-    @Autowired
-    public void setNotificationService(NotificationService notificationService) {
-        this.notificationService = notificationService;
-    }
-
-    private NotificationService notificationService;
+    private final NotificationService notificationService;
 
     @Override
     public User getByUsername(String username) {
@@ -70,12 +63,6 @@ public class UserServiceImpl implements UserService {
     public User getById(Long userId) {
         return userRepository.findById(userId).orElseThrow(()
                 -> new NoSuchElementException("Can't find user with id: " + userId));
-    }
-
-    @Override
-    public User getById(Long id) {
-        return userRepository.findById(id).orElseThrow(() ->
-                new NoSuchElementException("can't get user with id " + id));
     }
 
     private String messageAboutSavedUser() {

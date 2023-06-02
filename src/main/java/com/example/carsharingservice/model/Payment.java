@@ -7,6 +7,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.math.BigDecimal;
@@ -23,7 +24,7 @@ public class Payment {
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private Long id;
-    @Column(name = "rental_id")
+    @JoinColumn(name = "rental_id")
     @ManyToOne
     private Rental rental;
     @Column(name = "session_url")
