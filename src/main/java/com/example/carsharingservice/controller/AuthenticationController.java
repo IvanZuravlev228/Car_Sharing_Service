@@ -5,6 +5,7 @@ import com.example.carsharingservice.dto.user.UserRegisterDto;
 import com.example.carsharingservice.model.User;
 import com.example.carsharingservice.security.jwt.JwtTokenProvider;
 import com.example.carsharingservice.service.AuthenticationService;
+import com.example.carsharingservice.service.NotificationService;
 import com.example.carsharingservice.service.mapper.UserMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import java.util.HashMap;
@@ -24,10 +25,12 @@ public class AuthenticationController {
     private final AuthenticationService authenticationService;
     private final JwtTokenProvider jwtTokenProvider;
     private final UserMapper userRegisterMapper;
+    private final NotificationService notificationService;
 
     @PostMapping("/register")
     @Operation(description = "register new user")
     public User register(@RequestBody UserRegisterDto user) {
+        notificationService.sendMessageToAdministrators("New user was registered");
         return authenticationService.register(userRegisterMapper.toModel(user));
     }
 
@@ -42,6 +45,8 @@ public class AuthenticationController {
         String token = jwtTokenProvider.createToken(user.getEmail(), roles);
         Map<String, String> tokenMap = new HashMap<>();
         tokenMap.put("token", token);
+        notificationService.sendMessageToAdministrators("User with email: "
+                + userLoginDto.getEmail() + " was login to app");
         return new ResponseEntity<>(tokenMap, HttpStatus.OK);
     }
 }

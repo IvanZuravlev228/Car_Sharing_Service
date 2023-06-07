@@ -3,8 +3,10 @@ package com.example.carsharingservice.controller;
 import com.example.carsharingservice.dto.rental.RentalRequestDto;
 import com.example.carsharingservice.dto.rental.RentalResponseDto;
 import com.example.carsharingservice.model.Car;
+import com.example.carsharingservice.model.Rental;
 import com.example.carsharingservice.model.User;
 import com.example.carsharingservice.service.CarService;
+import com.example.carsharingservice.service.NotificationService;
 import com.example.carsharingservice.service.RentalService;
 import com.example.carsharingservice.service.UserService;
 import com.example.carsharingservice.service.mapper.RentalMapper;
@@ -28,6 +30,7 @@ public class RentalController {
     private final CarService carService;
     private final UserService userService;
     private final RentalMapper rentalMapper;
+    private final NotificationService notificationService;
 
     @GetMapping("/{id}")
     @Operation(description = "Get rental by id")
@@ -48,6 +51,8 @@ public class RentalController {
     @PostMapping("/{id}/return")
     @Operation(description = "End rental by id")
     public void returnCar(@PathVariable Long id) {
+        notificationService.sendMessageToAdministrators("Car from rental with id: "
+                + id + " was returned");
         rentalService.returnCar(id);
     }
 
@@ -56,8 +61,11 @@ public class RentalController {
     public RentalResponseDto createRental(@RequestBody RentalRequestDto rentalRequestDto) {
         Car car = carService.getById(rentalRequestDto.getCarId());
         User user = userService.getById(rentalRequestDto.getUserId());
-        return rentalMapper.toDto(
-                rentalService.createNewRental(car, user, rentalRequestDto.getRentalReturn())
-        );
+        notificationService.sendMessageToAdministrators("Rental for car with id "
+                + car.getId() + " and " + user.getEmail() + " was created");
+        Rental newRental =
+                rentalService.createNewRental(car, user, rentalRequestDto.getRentalReturn());
+        notificationService.sendMessageAboutSuccessRent(newRental);
+        return rentalMapper.toDto(newRental);
     }
 }

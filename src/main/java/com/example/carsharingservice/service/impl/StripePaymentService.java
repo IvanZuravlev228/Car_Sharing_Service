@@ -35,7 +35,7 @@ public class StripePaymentService implements PaymentService {
             quantityDays = Duration.between(rental.getRentalReturn(),
                     rental.getActualRentalReturn()).toDays();
         }
-        BigDecimal pricePerDay = rental.getCar().getDailyFee();
+        final BigDecimal pricePerDay = rental.getCar().getDailyFee();
         String priceId = ""; //Should be stored in Car
 
         Stripe.apiKey = "SECRET_API_KEY";

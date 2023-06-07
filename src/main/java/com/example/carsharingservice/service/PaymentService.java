@@ -1,7 +1,6 @@
 package com.example.carsharingservice.service;
 
 import com.example.carsharingservice.model.Payment;
-
 import java.util.List;
 
 public interface PaymentService {

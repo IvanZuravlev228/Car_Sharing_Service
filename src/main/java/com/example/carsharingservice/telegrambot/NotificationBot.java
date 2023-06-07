@@ -15,7 +15,7 @@ public class NotificationBot extends TelegramLongPollingBot {
     private final UserRepository userRepository;
 
     public NotificationBot(UserRepository userRepository) {
-        super();
+        super(Dotenv.configure().load().get("YOUR_BOT_TOKEN"));
         this.userRepository = userRepository;
     }
 
@@ -41,15 +41,8 @@ public class NotificationBot extends TelegramLongPollingBot {
     }
 
     @Override
-    public String getBotToken() {
-        Dotenv dotenv = Dotenv.load();
-        return dotenv.get("YOUR_BOT_TOKEN");
-    }
-
-    @Override
     public String getBotUsername() {
-        Dotenv dotenv = Dotenv.load();
-        return dotenv.get("YOUR_BOT_NAME");
+        return Dotenv.configure().load().get("YOUR_BOT_NAME");
     }
 
     private void sentMessage(Long chatId, String text) {
