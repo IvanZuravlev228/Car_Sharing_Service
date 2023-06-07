@@ -33,7 +33,7 @@ public class TelegramNotificationServiceImpl implements NotificationService {
         }
     }
 
-    @Scheduled(cron = "0 0 12 * * ?")
+    @Scheduled(cron = "0 * * * * ?")
     @Override
     public void checkOverdueRentals() {
         LocalDate localDate = LocalDate.now();
@@ -42,6 +42,11 @@ public class TelegramNotificationServiceImpl implements NotificationService {
             SendMessage sendMessage = new SendMessage();
             sendMessage.setChatId(rental.getUser().getChatId());
             sendMessage.setText(messageAboutOverdueRent(rental, localDate));
+            try {
+                notificationBot.execute(sendMessage);
+            } catch (TelegramApiException e) {
+                throw new RuntimeException("Message about overdue doesn't sent");
+            }
         }
     }
 
@@ -82,7 +87,8 @@ public class TelegramNotificationServiceImpl implements NotificationService {
     }
 
     private String messageAboutOverdueRent(Rental rental, LocalDate date) {
-        return "You overdue your rental payment at " + date.toString()
+        return "You overdue your rental with id: " + rental.getId() + " payment at "
+                + date.toString()
                 + ". Please, pay your fine!";
     }
 }

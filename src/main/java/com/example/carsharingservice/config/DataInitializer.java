@@ -40,7 +40,6 @@ public class DataInitializer {
         carService.createNewCar(car);
 
         Rental rental = new Rental();
-        rental.setRentalStart(LocalDate.of(2023, 1, 1));
         rental.setUser(user);
         rental.setCar(car);
         rentalService.createNewRental(car, user, LocalDate.of(2023, 1, 2));
