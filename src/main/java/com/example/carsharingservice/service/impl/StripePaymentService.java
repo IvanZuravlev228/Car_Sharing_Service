@@ -76,7 +76,6 @@ public class StripePaymentService implements PaymentService {
 
     @Override
     public Payment paymentCancel(Long paymentId) {
-        Payment payment = repository.findById(paymentId).get();
-        return payment;
+        return repository.findById(paymentId).get();
     }
 }
