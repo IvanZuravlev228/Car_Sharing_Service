@@ -8,6 +8,7 @@ import com.example.carsharingservice.service.CarService;
 import com.example.carsharingservice.service.RentalService;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -42,7 +43,8 @@ public class RentalServiceImpl implements RentalService {
 
     @Override
     public Rental getById(Long id) {
-        return rentalRepository.getReferenceById(id);
+        return rentalRepository.findById(id).orElseThrow(() ->
+                new NoSuchElementException("Can't find rental by id " + id));
     }
 
     @Override

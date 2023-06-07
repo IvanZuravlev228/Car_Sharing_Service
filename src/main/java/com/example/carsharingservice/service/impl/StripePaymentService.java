@@ -1,5 +1,7 @@
 package com.example.carsharingservice.service.impl;
 
+import static java.time.temporal.ChronoUnit.DAYS;
+
 import com.example.carsharingservice.model.Payment;
 import com.example.carsharingservice.model.Rental;
 import com.example.carsharingservice.repository.PaymentRepository;
@@ -9,15 +11,18 @@ import com.stripe.exception.StripeException;
 import com.stripe.model.checkout.Session;
 import com.stripe.param.checkout.SessionCreateParams;
 import java.math.BigDecimal;
-import java.time.Duration;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
 @Service
 public class StripePaymentService implements PaymentService {
+    private static final BigDecimal fineMultiplier = BigDecimal.valueOf(1.15);
     private final PaymentRepository repository;
+    @Value("${stripe.test.secret-key}")
+    private String secretKey;
 
     @Override
     public List<Payment> getByUser(Long userId) {
@@ -25,32 +30,34 @@ public class StripePaymentService implements PaymentService {
     }
 
     @Override
-    public Payment create(Payment payment, Payment.Type paymentType, String urlBase) {
-        Rental rental = payment.getRental();
+    public Payment create(Payment payment, Rental rental, String urlBase) {
+        payment.setRental(rental);
+        repository.save(payment); //to receive id
         long quantityDays;
-        if (paymentType == Payment.Type.PAYMENT) {
-            quantityDays = Duration.between(rental.getRentalStart(),
-                    rental.getRentalReturn()).toDays();
+        if (payment.getType() == Payment.Type.PAYMENT) {
+            quantityDays = DAYS.between(rental.getRentalStart(),
+                    rental.getRentalReturn());
         } else {
-            quantityDays = Duration.between(rental.getRentalReturn(),
-                    rental.getActualRentalReturn()).toDays();
+            quantityDays = DAYS.between(rental.getRentalReturn(),
+                    rental.getActualRentalReturn());
         }
         BigDecimal pricePerDay = rental.getCar().getDailyFee();
-        String priceId = ""; //Should be stored in Car
-
-        Stripe.apiKey = "SECRET_API_KEY";
+        BigDecimal amountToPay = pricePerDay.multiply(BigDecimal.valueOf(quantityDays));
+        if (payment.getType() == Payment.Type.FINE) {
+            amountToPay = amountToPay.multiply(fineMultiplier);
+        }
+        String paymentDescription =  rental.getCar().getBrand() + " "
+                + rental.getCar().getModel() + " " + payment.getType().name();
+        Stripe.apiKey = secretKey;
         SessionCreateParams params =
                 SessionCreateParams.builder()
                         .setMode(SessionCreateParams.Mode.PAYMENT)
-                        .setSuccessUrl(urlBase + "/success.html")
-                        .setCancelUrl(urlBase + "/cancel.html")
-                        .addLineItem(
-                                SessionCreateParams.LineItem.builder()
-                                        .setQuantity(quantityDays)
-                                        // Price ID in Stripe-Products
-                                        .setPrice(priceId)
-                                        .build())
+                        .setSuccessUrl(urlBase + "/success" + "?paymentId=" + payment.getId())
+                        .setCancelUrl(urlBase + "/cancel" + "?paymentId=" + payment.getId())
+                        .addPaymentMethodType(SessionCreateParams.PaymentMethodType.CARD)
+                        .addLineItem(buildLineItem(amountToPay, paymentDescription))
                         .build();
+
         Session session = null;
         try {
             session = Session.create(params);
@@ -60,10 +67,27 @@ public class StripePaymentService implements PaymentService {
 
         payment.setSessionUrl(session.getUrl());
         payment.setSessionId(session.getId());
-        BigDecimal amountToPay = pricePerDay.multiply(BigDecimal.valueOf(quantityDays));
         payment.setAmountToPay(amountToPay);
         payment.setStatus(Payment.Status.PENDING);
         return repository.save(payment);
+    }
+
+    private SessionCreateParams.LineItem buildLineItem(BigDecimal amountToPay,
+                                                       String description) {
+        return SessionCreateParams.LineItem.builder()
+                .setQuantity(1L)
+                .setPriceData(
+                        SessionCreateParams.LineItem.PriceData.builder()
+                                .setCurrency("usd")
+                                .setUnitAmount((long) (amountToPay.doubleValue() * 100))
+                                .setProductData(
+                                        SessionCreateParams.LineItem.PriceData.ProductData.builder()
+                                                .setName(description)
+                                                .build()
+                                )
+                                .build()
+                )
+                .build();
     }
 
     @Override

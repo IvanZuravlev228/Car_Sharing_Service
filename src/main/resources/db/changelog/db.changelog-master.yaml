@@ -9,3 +9,7 @@ databaseChangeLog:
       file: /db/changelog/changes/add-column-chat-id-in-users-table.sql
   - include:
       file: /db/changelog/changes/create-payment-table.sql
+  - include:
+      file: /db/changelog/changes/change-column-size-payments-table.sql
+  - include:
+      file: /db/changelog/changes/remove-non-null-constraint-payment.sql
