@@ -5,7 +5,7 @@ import com.example.carsharingservice.model.User;
 import com.example.carsharingservice.service.NotificationService;
 import com.example.carsharingservice.service.RentalService;
 import com.example.carsharingservice.service.UserService;
-import com.example.carsharingservice.telegrambot.NotificationBot;
+//import com.example.carsharingservice.telegrambot.NotificationBot;
 import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -17,20 +17,33 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 @Service
 @RequiredArgsConstructor
 public class TelegramNotificationServiceImpl implements NotificationService {
-    private final NotificationBot notificationBot;
-    private final UserService userService;
-    private final RentalService rentalService;
+//    private final NotificationBot notificationBot;
+    private UserService userService;
+    private RentalService rentalService;
+
+    @Lazy
+    @Autowired
+    public void setUserService(UserService userService) {
+        this.userService = userService;
+    }
+
+    @Lazy
+    @Autowired
+    public void setRentalService(RentalService rentalService) {
+        this.rentalService = rentalService;
+    }
+
 
     @Override
     public void sendMessageAboutSuccessRent(Rental rental) {
-        SendMessage sendMessage = new SendMessage();
-        sendMessage.setChatId(rental.getUser().getChatId());
-        sendMessage.setText(messageAboutSuccessRent(rental));
-        try {
-            notificationBot.execute(sendMessage);
-        } catch (TelegramApiException e) {
-            throw new RuntimeException("Can't sent message to Chat bot");
-        }
+//        SendMessage sendMessage = new SendMessage();
+//        sendMessage.setChatId(rental.getUser().getChatId());
+//        sendMessage.setText(messageAboutSuccessRent(rental));
+//        try {
+//            notificationBot.execute(sendMessage);
+//        } catch (TelegramApiException e) {
+//            throw new RuntimeException("Can't sent message to Chat bot");
+//        }
     }
 
     @Scheduled(cron = "0 * * * * ?")
@@ -52,17 +65,17 @@ public class TelegramNotificationServiceImpl implements NotificationService {
 
     @Override
     public void sendMessageToAdministrators(String message) {
-        List<User> managers = userService.findUserByRole(User.Role.MANAGER);
-        for (User user : managers) {
-            SendMessage sendMessage = new SendMessage();
-            sendMessage.setChatId(user.getChatId());
-            sendMessage.setText(message);
-            try {
-                notificationBot.execute(sendMessage);
-            } catch (TelegramApiException e) {
-                throw new RuntimeException("Message: " + message + " isn't sent to admins chat");
-            }
-        }
+//        List<User> managers = userService.findUserByRole(User.Role.MANAGER);
+//        for (User user : managers) {
+//            SendMessage sendMessage = new SendMessage();
+//            sendMessage.setChatId(user.getChatId());
+//            sendMessage.setText(message);
+//            try {
+//                notificationBot.execute(sendMessage);
+//            } catch (TelegramApiException e) {
+//                throw new RuntimeException("Message: " + message + " isn't sent to admins chat");
+//            }
+//        }
     }
 
     public void sendMessageToUser(String message) {

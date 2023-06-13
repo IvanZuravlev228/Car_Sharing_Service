@@ -7,6 +7,7 @@ import lombok.Data;
 @Data
 public class PaymentResponseDto {
     private Long id;
+    private Long rentalId;
     private String sessionUrl;
     private BigDecimal amountToPay;
     private Payment.Status status;
