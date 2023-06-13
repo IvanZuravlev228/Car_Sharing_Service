@@ -9,4 +9,6 @@ public interface NotificationService {
     void checkOverdueRentals();
 
     void sendMessageToAdministrators(String message);
+
+    void sendMessageToUser(String message);
 }
