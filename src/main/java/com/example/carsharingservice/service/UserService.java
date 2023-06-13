@@ -1,7 +1,7 @@
 package com.example.carsharingservice.service;
 
-import java.util.List;
 import com.example.carsharingservice.model.User;
+import java.util.List;
 import org.springframework.security.core.Authentication;
 
 public interface UserService {
@@ -16,4 +16,5 @@ public interface UserService {
     User updateUserInfo(User user, Authentication authentication);
 
     User getById(Long id);
+
 }

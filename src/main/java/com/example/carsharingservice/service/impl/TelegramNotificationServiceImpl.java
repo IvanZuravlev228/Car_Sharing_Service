@@ -9,8 +9,6 @@ import com.example.carsharingservice.service.UserService;
 import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -35,6 +33,7 @@ public class TelegramNotificationServiceImpl implements NotificationService {
         this.rentalService = rentalService;
     }
 
+
     @Override
     public void sendMessageAboutSuccessRent(Rental rental) {
 //        SendMessage sendMessage = new SendMessage();
@@ -47,7 +46,7 @@ public class TelegramNotificationServiceImpl implements NotificationService {
 //        }
     }
 
-    @Scheduled(cron = "0 0 12 * * ?")
+    @Scheduled(cron = "0 * * * * ?")
     @Override
     public void checkOverdueRentals() {
         LocalDate localDate = LocalDate.now();
@@ -56,6 +55,11 @@ public class TelegramNotificationServiceImpl implements NotificationService {
             SendMessage sendMessage = new SendMessage();
             sendMessage.setChatId(rental.getUser().getChatId());
             sendMessage.setText(messageAboutOverdueRent(rental, localDate));
+            try {
+                notificationBot.execute(sendMessage);
+            } catch (TelegramApiException e) {
+                throw new RuntimeException("Message about overdue doesn't sent");
+            }
         }
     }
 
@@ -74,17 +78,30 @@ public class TelegramNotificationServiceImpl implements NotificationService {
 //        }
     }
 
+    public void sendMessageToUser(String message) {
+        List<User> users = userService.findUserByRole(User.Role.CUSTOMER);
+        for (User user : users) {
+            SendMessage sendMessage = new SendMessage();
+            sendMessage.setChatId(user.getChatId());
+            sendMessage.setText(message);
+            try {
+                notificationBot.execute(sendMessage);
+            } catch (TelegramApiException e) {
+                throw new RuntimeException("Message: " + message + " isn't sent to admins chat");
+            }
+        }
+    }
+
     private String messageAboutSuccessRent(Rental rental) {
-        String text = rental.getUser().getFirstName() + ", you are successfully rent: "
+        return rental.getUser().getFirstName() + ", you are successfully rent: "
                 + rental.getCar().getModel() + " at " + rental.getRentalStart().toString()
                 + ". Please you should return car until " + rental.getRentalReturn().toString()
                 + ". Your daily fee: " + rental.getCar().getDailyFee().toString();
-        return text;
     }
 
     private String messageAboutOverdueRent(Rental rental, LocalDate date) {
-        String text = "You overdue your rental payment at " + date.toString()
+        return "You overdue your rental with id: " + rental.getId() + " payment at "
+                + date.toString()
                 + ". Please, pay your fine!";
-        return text;
     }
 }

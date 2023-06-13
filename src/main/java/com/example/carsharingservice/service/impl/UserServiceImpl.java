@@ -2,13 +2,10 @@ package com.example.carsharingservice.service.impl;
 
 import com.example.carsharingservice.model.User;
 import com.example.carsharingservice.repository.UserRepository;
-import com.example.carsharingservice.service.NotificationService;
 import com.example.carsharingservice.service.UserService;
 import java.util.List;
 import java.util.NoSuchElementException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -18,7 +15,6 @@ import org.springframework.stereotype.Service;
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final NotificationService notificationService;
 
     @Override
     public User getByUsername(String username) {
@@ -31,7 +27,6 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(id).orElseThrow(() ->
                 new NoSuchElementException("can't get user with id " + id));
         user.setRole(role);
-        notificationService.sendMessageToAdministrators(messageAboutUpdatedUser());
         return userRepository.save(user);
     }
 
@@ -42,7 +37,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User save(User user) {
-        notificationService.sendMessageToAdministrators(messageAboutSavedUser());
         return userRepository.save(user);
     }
 
@@ -55,7 +49,6 @@ public class UserServiceImpl implements UserService {
         user.setRole(role);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         authentication.setAuthenticated(false);
-        notificationService.sendMessageToAdministrators(messageAboutUpdatedUser());
         return userRepository.save(user);
     }
 
@@ -63,13 +56,5 @@ public class UserServiceImpl implements UserService {
     public User getById(Long userId) {
         return userRepository.findById(userId).orElseThrow(()
                 -> new NoSuchElementException("Can't find user with id: " + userId));
-    }
-
-    private String messageAboutSavedUser() {
-        return "User was save to DB";
-    }
-
-    private String messageAboutUpdatedUser() {
-        return "Info about User was updated to DB";
     }
 }

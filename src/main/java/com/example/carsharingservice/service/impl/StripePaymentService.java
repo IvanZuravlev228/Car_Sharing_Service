@@ -41,6 +41,7 @@ public class StripePaymentService implements PaymentService {
             quantityDays = DAYS.between(rental.getRentalReturn(),
                     rental.getActualRentalReturn());
         }
+
         BigDecimal pricePerDay = rental.getCar().getDailyFee();
         BigDecimal amountToPay = pricePerDay.multiply(BigDecimal.valueOf(quantityDays));
         if (payment.getType() == Payment.Type.FINE) {
@@ -49,6 +50,7 @@ public class StripePaymentService implements PaymentService {
         String paymentDescription =  rental.getCar().getBrand() + " "
                 + rental.getCar().getModel() + " " + payment.getType().name();
         Stripe.apiKey = secretKey;
+
         SessionCreateParams params =
                 SessionCreateParams.builder()
                         .setMode(SessionCreateParams.Mode.PAYMENT)
