@@ -30,7 +30,6 @@ public class AuthenticationController {
     @PostMapping("/register")
     @Operation(description = "register new user")
     public User register(@RequestBody UserRegisterDto user) {
-        notificationService.sendMessageToAdministrators("New user was registered");
         return authenticationService.register(userRegisterMapper.toModel(user));
     }
 
@@ -45,8 +44,6 @@ public class AuthenticationController {
         String token = jwtTokenProvider.createToken(user.getEmail(), roles);
         Map<String, String> tokenMap = new HashMap<>();
         tokenMap.put("token", token);
-        notificationService.sendMessageToAdministrators("User with email: "
-                + userLoginDto.getEmail() + " was login to app");
         return new ResponseEntity<>(tokenMap, HttpStatus.OK);
     }
 }

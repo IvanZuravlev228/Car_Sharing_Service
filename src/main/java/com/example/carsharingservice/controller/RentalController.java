@@ -11,6 +11,8 @@ import com.example.carsharingservice.service.RentalService;
 import com.example.carsharingservice.service.UserService;
 import com.example.carsharingservice.service.mapper.RentalMapper;
 import io.swagger.v3.oas.annotations.Operation;
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -51,21 +53,26 @@ public class RentalController {
     @PostMapping("/{id}/return")
     @Operation(description = "End rental by id")
     public void returnCar(@PathVariable Long id) {
-        notificationService.sendMessageToAdministrators("Car from rental with id: "
-                + id + " was returned");
+        notificationService.sendMessageToAllUsers("Спасибо что вернули машину)");
         rentalService.returnCar(id);
     }
 
     @PostMapping
     @Operation(description = "Create new rental")
     public RentalResponseDto createRental(@RequestBody RentalRequestDto rentalRequestDto) {
+        checkCorrectDate(rentalRequestDto.getRentalStart(), rentalRequestDto.getRentalReturn());
         Car car = carService.getById(rentalRequestDto.getCarId());
         User user = userService.getById(rentalRequestDto.getUserId());
-        notificationService.sendMessageToAdministrators("Rental for car with id "
-                + car.getId() + " and " + user.getEmail() + " was created");
         Rental newRental =
-                rentalService.createNewRental(car, user, rentalRequestDto.getRentalReturn());
+                rentalService.createNewRental(car, user,
+                        rentalRequestDto.getRentalStart(), rentalRequestDto.getRentalReturn());
         notificationService.sendMessageAboutSuccessRent(newRental);
         return rentalMapper.toDto(newRental);
+    }
+
+    private void checkCorrectDate(LocalDate start, LocalDate end) {
+        if (Period.between(start, end).isNegative()) {
+            throw new RuntimeException("Period of rent can't be negative");
+        }
     }
 }

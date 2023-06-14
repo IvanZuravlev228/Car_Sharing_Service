@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS cars
     brand character varying(256) NOT NULL,
     type character varying(256) NOT NULL,
     inventory int DEFAULT 0 CHECK (inventory >= 0),
-    daily_fee decimal NOT NULL,
+    daily_fee decimal(10,2) NOT NULL,
 
     CONSTRAINT car_pk PRIMARY KEY(id)
     );

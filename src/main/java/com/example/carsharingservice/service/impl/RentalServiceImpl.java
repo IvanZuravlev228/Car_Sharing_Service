@@ -20,11 +20,11 @@ public class RentalServiceImpl implements RentalService {
     private final RentalRepository rentalRepository;
 
     @Override
-    public Rental createNewRental(Car car, User user, LocalDate returnDate) {
+    public Rental createNewRental(Car car, User user, LocalDate startDate, LocalDate returnDate) {
         Rental rental = new Rental();
         rental.setCar(car);
         rental.setUser(user);
-        rental.setRentalStart(LocalDate.now());
+        rental.setRentalStart(startDate);
         rental.setRentalReturn(returnDate);
         carService.removeCarFromInventory(car.getId());
         rentalRepository.save(rental);
@@ -58,5 +58,10 @@ public class RentalServiceImpl implements RentalService {
     @Override
     public List<Rental> findByOverdueRent(LocalDate date) {
         return rentalRepository.findByOverdueRent(date);
+    }
+
+    @Override
+    public void save(Rental rental) {
+        rentalRepository.save(rental);
     }
 }
