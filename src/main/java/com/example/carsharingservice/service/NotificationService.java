@@ -8,7 +8,9 @@ public interface NotificationService {
 
     void checkOverdueRentals();
 
-    void sendMessageToAdministrators(String message);
+//    void sendMessageToAdministrators(String message);
 
-    void sendMessageToUser(String message);
+    void sendMessageToAllUsers(String message);
+
+    void sendMessageWithPaymentUrl(String url, Long chatId);
 }

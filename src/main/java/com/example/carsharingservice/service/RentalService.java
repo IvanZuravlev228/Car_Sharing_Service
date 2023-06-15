@@ -7,7 +7,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface RentalService {
-    Rental createNewRental(Car car, User user, LocalDate returnDate);
+    Rental createNewRental(Car car, User user, LocalDate startDate, LocalDate returnDate);
 
     List<Rental> getRentalsByUserIdAndIsReturned(Long userId, Boolean isRented);
 
@@ -16,4 +16,6 @@ public interface RentalService {
     Rental returnCar(Long id);
 
     List<Rental> findByOverdueRent(LocalDate date);
+
+    void save(Rental rental);
 }

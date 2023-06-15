@@ -32,8 +32,6 @@ public class CarController {
     @Operation(description = "create new car if such don't exists")
     public CarResponseDto createNewCar(@RequestBody CarRequestDto dto) {
         Car car = carService.createNewCar(carMapper.toModel(dto));
-        notificationService.sendMessageToAdministrators("New car was created with id: "
-                + car.getId());
         return carMapper.toDto(car);
     }
 
@@ -58,15 +56,12 @@ public class CarController {
         Car car = carMapper.toModel(dto);
         car.setId(id);
         Car updatedCar = carService.update(car);
-        notificationService.sendMessageToAdministrators("Car with id "
-                + updatedCar.getId() + " was updated");
         return carMapper.toDto(updatedCar);
     }
 
     @DeleteMapping("/{id}")
     @Operation(description = "delete car by id")
     public void deleteCar(@PathVariable @Parameter(description = "car id") Long id) {
-        notificationService.sendMessageToAdministrators("Car with id " + id + " was deleted");
         carService.delete(id);
     }
 
@@ -74,8 +69,6 @@ public class CarController {
     @Operation(description = "add one more specific car to inventory")
     public CarResponseDto addCarToInventory(
             @PathVariable @Parameter(description = "car id") Long id) {
-        notificationService.sendMessageToAdministrators("Car by id: "
-                + id + " was add ot inventory");
         return carMapper.toDto(carService.addCarToInventory(id));
     }
 
@@ -83,8 +76,6 @@ public class CarController {
     @Operation(description = "add one more specific car to inventory")
     public CarResponseDto removeCarFromInventory(
             @PathVariable @Parameter(description = "car id") Long id) {
-        notificationService.sendMessageToAdministrators("One car with id: "
-                + id + " was removed from inventory");
         return carMapper.toDto(carService.removeCarFromInventory(id));
     }
 }
