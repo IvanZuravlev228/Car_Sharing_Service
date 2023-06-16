@@ -32,11 +32,11 @@ public class RentalServiceImpl implements RentalService {
     }
 
     @Override
-    public List<Rental> getRentalsByUserIdAndIsReturned(Long userId, Boolean isRented) {
+    public List<Rental> getRentalsByUserIdAndIsReturned(Long userId) {
         List<Rental> rental = rentalRepository.getByUserId(userId);
         return rental
                 .stream()
-                .filter(rental1 -> rental1.getActualRentalReturn() == null && isRented)
+                .filter(rental1 -> rental1.getActualRentalReturn() == null)
                 .collect(Collectors.toList());
     }
 
@@ -47,8 +47,8 @@ public class RentalServiceImpl implements RentalService {
     }
 
     @Override
-    public Rental returnCar(Long id) {
-        Rental rental = getById(id);
+    public Rental returnCar(Long rentalId) {
+        Rental rental = getById(rentalId);
         rental.setActualRentalReturn(LocalDate.now());
         carService.addCarToInventory(rental.getCar().getId());
         rentalRepository.save(rental);

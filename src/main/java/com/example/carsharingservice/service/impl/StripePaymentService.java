@@ -4,10 +4,12 @@ import static java.time.temporal.ChronoUnit.DAYS;
 
 import com.example.carsharingservice.model.Payment;
 import com.example.carsharingservice.model.Rental;
+import com.example.carsharingservice.model.User;
 import com.example.carsharingservice.repository.PaymentRepository;
 import com.example.carsharingservice.service.NotificationService;
 import com.example.carsharingservice.service.PaymentService;
 import com.example.carsharingservice.service.RentalService;
+import com.example.carsharingservice.service.UserService;
 import com.stripe.Stripe;
 import com.stripe.exception.StripeException;
 import com.stripe.model.checkout.Session;
@@ -25,16 +27,19 @@ public class StripePaymentService implements PaymentService {
     private final PaymentRepository paymentRepository;
     private final RentalService rentalService;
     private final NotificationService notificationService;
+    private final UserService userService;
+
     @Value("${stripe.test.secret-key}")
     private String secretKey;
 
     @Override
     public List<Payment> getByUser(Long userId) {
-        return paymentRepository.findAllByRental_User_Id(userId);
+        return paymentRepository.findAllByRentalUserId(userId);
     }
 
     @Override
-    public Payment create(Payment payment, Rental rental, String urlBase) {
+    public Payment create(Payment payment, Rental rental, String urlBase, String userName) {
+        final User user = userService.getByUsername(userName);
         payment.setRental(rental);
         paymentRepository.save(payment); //to receive id
         long quantityDays;
@@ -56,8 +61,10 @@ public class StripePaymentService implements PaymentService {
         SessionCreateParams params =
                 SessionCreateParams.builder()
                         .setMode(SessionCreateParams.Mode.PAYMENT)
-                        .setSuccessUrl(urlBase + "/success" + "?paymentId=" + payment.getId())
-                        .setCancelUrl(urlBase + "/cancel" + "?paymentId=" + payment.getId())
+                        .setSuccessUrl(urlBase + "/success" + "?paymentId=" + payment.getId()
+                                + "&userChatId=" + user.getChatId())
+                        .setCancelUrl(urlBase + "/cancel" + "?paymentId=" + payment.getId()
+                                + "&userChatId=" + user.getChatId())
                         .addPaymentMethodType(SessionCreateParams.PaymentMethodType.CARD)
                         .addLineItem(buildLineItem(amountToPay, paymentDescription))
                         .build();
@@ -73,6 +80,8 @@ public class StripePaymentService implements PaymentService {
         payment.setSessionId(session.getId());
         payment.setAmountToPay(amountToPay);
         payment.setStatus(Payment.Status.PENDING);
+
+        notificationService.sendMessageWithPaymentUrl(session.getUrl(), user.getChatId());
         return paymentRepository.save(payment);
     }
 
@@ -95,13 +104,12 @@ public class StripePaymentService implements PaymentService {
     }
 
     @Override
-    public Payment paymentSuccess(Long paymentId) {
+    public Payment paymentSuccess(Long paymentId, Long userChatId) {
         Payment payment = paymentRepository.findById(paymentId).get();
         payment.setStatus(Payment.Status.PAID);
         paymentRepository.save(payment);
         Rental rental = rentalService.getById(payment.getRental().getId());
-        rental.setActualRentalReturn(LocalDate.now());
-        rentalService.save(rental);
+        notificationService.sendMessageAboutSuccessfulPayment(rental.getId(), userChatId);
         return payment;
     }
 

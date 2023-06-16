@@ -25,16 +25,16 @@ public class NotificationBot extends TelegramLongPollingBot {
             String messageText = update.getMessage().getText();
             Long chatId = update.getMessage().getChatId();
             if (messageText.equals("/start")) {
-                greetMessage(chatId, update.getMessage().getChat().getFirstName());
+                sendGreetMessage(chatId, update.getMessage().getChat().getFirstName());
             } else {
                 Optional<User> userByEmail = userRepository.getUserByEmail(messageText);
                 if (userByEmail.isPresent()) {
                     User user = userByEmail.get();
                     user.setChatId(chatId);
                     userRepository.save(user);
-                    thankYouMessage(chatId);
+                    sendThankYouMessage(chatId);
                 } else {
-                    failMessage(chatId);
+                    sendFailMessage(chatId);
                 }
             }
         }
@@ -52,7 +52,7 @@ public class NotificationBot extends TelegramLongPollingBot {
         return dotenv.get("YOUR_BOT_NAME");
     }
 
-    private void sentMessage(Long chatId, String text) {
+    private void sendMessage(Long chatId, String text) {
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(chatId);
         sendMessage.setText(text);
@@ -63,18 +63,18 @@ public class NotificationBot extends TelegramLongPollingBot {
         }
     }
 
-    private void greetMessage(Long chatId, String name) {
+    private void sendGreetMessage(Long chatId, String name) {
         String text = "Hello user: " + name + ", Please send your email";
-        sentMessage(chatId, text);
+        sendMessage(chatId, text);
     }
 
-    private void failMessage(Long chatId) {
+    private void sendFailMessage(Long chatId) {
         String text = "User with this email doesn't exist in DB, please check your credential";
-        sentMessage(chatId, text);
+        sendMessage(chatId, text);
     }
 
-    private void thankYouMessage(Long chatId) {
+    private void sendThankYouMessage(Long chatId) {
         String text = "You are successfully sync with your account";
-        sentMessage(chatId, text);
+        sendMessage(chatId, text);
     }
 }

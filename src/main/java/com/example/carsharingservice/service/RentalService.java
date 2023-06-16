@@ -9,7 +9,7 @@ import java.util.List;
 public interface RentalService {
     Rental createNewRental(Car car, User user, LocalDate startDate, LocalDate returnDate);
 
-    List<Rental> getRentalsByUserIdAndIsReturned(Long userId, Boolean isRented);
+    List<Rental> getRentalsByUserIdAndIsReturned(Long userId);
 
     Rental getById(Long id);
 

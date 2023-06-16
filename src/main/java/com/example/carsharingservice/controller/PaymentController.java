@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -35,16 +36,18 @@ public class PaymentController {
 
     @PostMapping
     public PaymentResponseDto createNewPayment(HttpServletRequest request,
+                                               Authentication authentication,
                                                @RequestBody PaymentRequestDto dto) {
         Rental rental = rentalService.getById(dto.getRentalId());
         Payment payment = paymentService.create(mapper.toModel(dto),
-                rental, request.getRequestURL().toString());
+                rental, request.getRequestURL().toString(), authentication.getName());
         return mapper.toDto(payment);
     }
 
     @GetMapping("/success")
-    public PaymentResponseDto paymentSuccess(@RequestParam Long paymentId) {
-        Payment payment = paymentService.paymentSuccess(paymentId);
+    public PaymentResponseDto paymentSuccess(@RequestParam Long paymentId,
+                                             @RequestParam Long userChatId) {
+        Payment payment = paymentService.paymentSuccess(paymentId, userChatId);
         return mapper.toDto(payment);
     }
 

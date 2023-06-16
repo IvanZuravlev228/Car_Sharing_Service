@@ -7,9 +7,9 @@ import java.util.List;
 public interface PaymentService {
     List<Payment> getByUser(Long userId);
 
-    Payment create(Payment payment, Rental rental, String urlBase);
+    Payment create(Payment payment, Rental rental, String urlBase, String userName);
 
-    Payment paymentSuccess(Long paymentId);
+    Payment paymentSuccess(Long paymentId, Long userChatId);
 
     Payment paymentCancel(Long paymentId);
 }
