@@ -3,7 +3,6 @@ package com.example.carsharingservice.controller;
 import com.example.carsharingservice.dto.user.UserRegisterDto;
 import com.example.carsharingservice.dto.user.UserResponseDto;
 import com.example.carsharingservice.model.User;
-import com.example.carsharingservice.service.NotificationService;
 import com.example.carsharingservice.service.UserService;
 import com.example.carsharingservice.service.mapper.UserMapper;
 import io.swagger.v3.oas.annotations.Operation;
@@ -24,7 +23,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
     private final UserService userService;
     private final UserMapper userMapper;
-    private final NotificationService notificationService;
 
     @GetMapping("/me")
     @Operation(description = "get all info about logged in user")
@@ -44,7 +42,9 @@ public class UserController {
     @Operation(description = "updates logged in user information")
     public UserResponseDto updateUserInfo(Authentication authentication,
                                           @RequestBody UserRegisterDto dto) {
-        return userMapper.toDto(
-                userService.updateUserInfo(userMapper.toModel(dto), authentication));
+        UserResponseDto userResponseDto = userMapper.toDto(
+                userService.updateUserInfo(userMapper.toModel(dto), authentication.getName()));
+        authentication.setAuthenticated(false);
+        return userResponseDto;
     }
 }

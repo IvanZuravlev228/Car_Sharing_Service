@@ -6,7 +6,6 @@ import com.example.carsharingservice.service.UserService;
 import java.util.List;
 import java.util.NoSuchElementException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -41,14 +40,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User updateUserInfo(User user, Authentication authentication) {
-        User userToUpdate = getByUsername(authentication.getName());
+    public User updateUserInfo(User user, String userName) {
+        User userToUpdate = getByUsername(userName);
         user.setId(userToUpdate.getId());
         user.setEmail(userToUpdate.getEmail());
         User.Role role = userToUpdate.getRole();
         user.setRole(role);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        authentication.setAuthenticated(false);
         return userRepository.save(user);
     }
 

@@ -42,9 +42,8 @@ public class RentalController {
 
     @GetMapping
     @Operation(description = "Get rentals by user id and is active")
-    public List<RentalResponseDto> getActiveRental(@RequestParam Long userId,
-                                                   @RequestParam Boolean isActive) {
-        return rentalService.getRentalsByUserIdAndIsReturned(userId, isActive)
+    public List<RentalResponseDto> getActiveRental(@RequestParam Long userId) {
+        return rentalService.getRentalsByUserIdAndIsReturned(userId)
                 .stream()
                 .map(rentalMapper::toDto)
                 .collect(Collectors.toList());
@@ -54,7 +53,7 @@ public class RentalController {
     @Operation(description = "End rental by id")
     public void returnCar(@PathVariable Long id) {
         notificationService.sendMessageToAllUsers("Спасибо что вернули машину)");
-        rentalService.returnCar(id);
+        Rental rental = rentalService.returnCar(id);
     }
 
     @PostMapping

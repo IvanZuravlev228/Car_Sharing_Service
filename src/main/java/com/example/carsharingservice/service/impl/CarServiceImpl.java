@@ -27,9 +27,8 @@ public class CarServiceImpl implements CarService {
         if (car.getInventory() > 0) {
             car.setInventory(car.getInventory() - 1);
             return carRepository.save(car);
-        } else {
-            throw new RuntimeException("Can't take car with id " + id + " from inventory");
         }
+        throw new RuntimeException("Can't take car with id " + id + " from inventory");
     }
 
     @Override

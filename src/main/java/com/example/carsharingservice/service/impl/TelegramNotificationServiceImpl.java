@@ -38,18 +38,6 @@ public class TelegramNotificationServiceImpl implements NotificationService {
         this.rentalService = rentalService;
     }
 
-    @Override
-    public void sendMessageAboutSuccessRent(Rental rental) {
-        SendMessage sendMessage = new SendMessage();
-        sendMessage.setChatId(rental.getUser().getChatId());
-        sendMessage.setText(messageAboutSuccessRent(rental));
-        try {
-            notificationBot.execute(sendMessage);
-        } catch (TelegramApiException e) {
-            throw new RuntimeException("Can't sent message to Chat bot");
-        }
-    }
-
     @Scheduled(cron = "0 * * * * ?")
     @Override
     public void checkOverdueRentals() {
@@ -65,6 +53,18 @@ public class TelegramNotificationServiceImpl implements NotificationService {
             } catch (TelegramApiException e) {
                 throw new RuntimeException("Message about overdue doesn't sent");
             }
+        }
+    }
+
+    @Override
+    public void sendMessageAboutSuccessRent(Rental rental) {
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.setChatId(rental.getUser().getChatId());
+        sendMessage.setText(getMessageAboutSuccessRent(rental));
+        try {
+            notificationBot.execute(sendMessage);
+        } catch (TelegramApiException e) {
+            throw new RuntimeException("Can't sent message to Chat bot");
         }
     }
 
@@ -98,10 +98,10 @@ public class TelegramNotificationServiceImpl implements NotificationService {
     }
 
     @Override
-    public void sendMessageWithPaymentUrl(String url, Long chatId) {
+    public void sendMessageAboutSuccessfulPayment(Long rentalId, Long chatId) {
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(chatId);
-        sendMessage.setText(messageAboutPaymentUrl(url));
+        sendMessage.setText(getMessageAboutSuccessfulPayment(rentalId));
         try {
             notificationBot.execute(sendMessage);
         } catch (TelegramApiException e) {
@@ -109,11 +109,32 @@ public class TelegramNotificationServiceImpl implements NotificationService {
         }
     }
 
-    private String messageAboutPaymentUrl(String url) {
-        return "You can pay your rent by this link: " + url;
+    @Override
+    public void sendMessageWithPaymentUrl(String url, Long chatId) {
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.setChatId(chatId);
+        sendMessage.setText(getMessageAboutPaymentUrl(url));
+        try {
+            notificationBot.execute(sendMessage);
+        } catch (TelegramApiException e) {
+            throw new RuntimeException("Can't sent message to Chat bot");
+        }
     }
 
-    private String messageAboutSuccessRent(Rental rental) {
+    private String getMessageAboutSuccessfulPayment(Long rentalId) {
+        return "You have successfully paid for the car rental."
+                + " Rental ID number " + rentalId + ". For details, contact the administrator";
+    }
+
+    private String getMessageAboutPaymentUrl(String url) {
+        return "You can pay your rent through this link: " + url;
+    }
+
+    private String getThankYouMessage() {
+        return "Thank you for using our car sharing service\nSee you later!";
+    }
+
+    private String getMessageAboutSuccessRent(Rental rental) {
         LocalDate rentalStart = rental.getRentalStart();
         LocalDate rentalReturn = rental.getRentalReturn();
         BigDecimal dailyFee = rental.getCar().getDailyFee();

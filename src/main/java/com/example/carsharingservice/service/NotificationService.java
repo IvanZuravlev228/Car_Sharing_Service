@@ -12,5 +12,7 @@ public interface NotificationService {
 
     void sendMessageToAllUsers(String message);
 
+    void sendMessageAboutSuccessfulPayment(Long rentalId, Long chatId);
+
     void sendMessageWithPaymentUrl(String url, Long chatId);
 }
