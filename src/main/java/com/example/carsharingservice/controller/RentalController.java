@@ -16,12 +16,12 @@ import java.time.Period;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -42,8 +42,9 @@ public class RentalController {
 
     @GetMapping
     @Operation(description = "Get rentals by user id and is active")
-    public List<RentalResponseDto> getActiveRental(@RequestParam Long userId) {
-        return rentalService.getRentalsByUserIdAndIsReturned(userId)
+    public List<RentalResponseDto> getActiveRental(Authentication authentication) {
+        return rentalService.getRentalsByUserIdAndIsReturned(
+                userService.getByUsername(authentication.getName()).getId())
                 .stream()
                 .map(rentalMapper::toDto)
                 .collect(Collectors.toList());
@@ -58,10 +59,11 @@ public class RentalController {
 
     @PostMapping
     @Operation(description = "Create new rental")
-    public RentalResponseDto createRental(@RequestBody RentalRequestDto rentalRequestDto) {
+    public RentalResponseDto createRental(Authentication authentication,
+                                          @RequestBody RentalRequestDto rentalRequestDto) {
         checkCorrectDate(rentalRequestDto.getRentalStart(), rentalRequestDto.getRentalReturn());
         Car car = carService.getById(rentalRequestDto.getCarId());
-        User user = userService.getById(rentalRequestDto.getUserId());
+        User user = userService.getByUsername(authentication.getName());
         Rental newRental =
                 rentalService.createNewRental(car, user,
                         rentalRequestDto.getRentalStart(), rentalRequestDto.getRentalReturn());
